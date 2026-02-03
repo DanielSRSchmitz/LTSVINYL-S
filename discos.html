@@ -42,13 +42,14 @@
 
         <div class="filtro-grupo">
             <label>Preço até</label>
-            <input type="range" min="10" max="100" value="100">
+            <input type="range" id="precoRange" min="10" max="100" value="100">
+            <span id="precoValor">100€</span>
         </div>
     </aside>
 
     <main class="catalogo">
-        <div class="grid-produtos">
-            <div class="card">
+        <div class="grid-produtos" id="grid-produtos">
+            <div class="card" data-genero="rock" data-preco="32">
                 <div class="disco-img" style="background-image: url('https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=500');"></div>
                 <div class="card-info">
                     <span class="tag">Rock</span>
@@ -58,25 +59,56 @@
                     <button class="btn-comprar"><i class="fa-solid fa-cart-shopping"></i> Comprar</button>
                 </div>
             </div>
+
+            <div class="card" data-genero="jazz" data-preco="25">
+                <div class="disco-img" style="background-image: url('https://images.unsplash.com/photo-1511192336575-5a79af67a629?q=80&w=500');"></div>
+                <div class="card-info">
+                    <span class="tag">Jazz</span>
+                    <h3>Kind of Blue</h3>
+                    <p class="artista">Miles Davis</p>
+                    <p class="preco">25.00€</p>
+                    <button class="btn-comprar"><i class="fa-solid fa-cart-shopping"></i> Comprar</button>
+                </div>
             </div>
+        </div>
     </main>
 </div>
+
 <script>
-document.getElementById('busca').addEventListener('keyup', function() {
-    let valor = this.value.toLowerCase();
-    let cards = document.querySelectorAll('.card');
-    
-    cards.forEach(card => {
-        let nome = card.querySelector('h3').innerText.toLowerCase();
-        let artista = card.querySelector('.artista').innerText.toLowerCase();
+    const busca = document.getElementById('busca');
+    const generoFiltro = document.getElementById('genero');
+    const precoRange = document.getElementById('precoRange');
+    const precoValor = document.getElementById('precoValor');
+    const cards = document.querySelectorAll('.card');
+
+    function filtrar() {
+        const texto = busca.value.toLowerCase();
+        const generoSelecionado = generoFiltro.value.toLowerCase();
+        const precoMaximo = parseInt(precoRange.value);
         
-        if(nome.includes(valor) || artista.includes(valor)) {
-            card.style.display = "block";
-        } else {
-            card.style.display = "none";
-        }
-    });
-});
+        precoValor.innerText = precoMaximo + "€";
+
+        cards.forEach(card => {
+            const nome = card.querySelector('h3').innerText.toLowerCase();
+            const artista = card.querySelector('.artista').innerText.toLowerCase();
+            const generoCard = card.getAttribute('data-genero');
+            const precoCard = parseInt(card.getAttribute('data-preco'));
+
+            const bateTexto = nome.includes(texto) || artista.includes(texto);
+            const bateGenero = generoSelecionado === 'todos' || generoCard === generoSelecionado;
+            const batePreco = precoCard <= precoMaximo;
+
+            if (bateTexto && bateGenero && batePreco) {
+                card.style.display = "block";
+            } else {
+                card.style.display = "none";
+            }
+        });
+    }
+
+    busca.addEventListener('keyup', filtrar);
+    generoFiltro.addEventListener('change', filtrar);
+    precoRange.addEventListener('input', filtrar);
 </script>
 </body>
 </html>
