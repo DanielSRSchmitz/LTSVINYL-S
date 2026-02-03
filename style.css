@@ -14,7 +14,7 @@
 
 body {
     font-family: 'Poppins', sans-serif;
-    color: var(--dark-text);
+    color: #829cbc(--dark-text);
     line-height: 1.6;
 }
 
@@ -111,7 +111,6 @@ nav a:hover {
     box-shadow: 0 5px 15px rgba(0, 115, 140, 0.3);
 }
 
-/* Seção de Serviços */
 .servicos {
     padding: 80px 5%;
     background: var(--white);
