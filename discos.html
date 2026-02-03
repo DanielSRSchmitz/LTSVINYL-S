@@ -61,5 +61,22 @@
             </div>
     </main>
 </div>
+<script>
+document.getElementById('busca').addEventListener('keyup', function() {
+    let valor = this.value.toLowerCase();
+    let cards = document.querySelectorAll('.card');
+    
+    cards.forEach(card => {
+        let nome = card.querySelector('h3').innerText.toLowerCase();
+        let artista = card.querySelector('.artista').innerText.toLowerCase();
+        
+        if(nome.includes(valor) || artista.includes(valor)) {
+            card.style.display = "block";
+        } else {
+            card.style.display = "none";
+        }
+    });
+});
+</script>
 </body>
 </html>
