@@ -3,20 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>Catálogo | LTS VINYL-S</title>
+    <link rel="stylesheet" href="css/stylevenda.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <header>
-        <nav>
-            <div class="logo">LTS <span>VINYL-S</span></div>
-            <ul>
-                <li><a href="index.html" class="active">Início</a></li>
-                <li><a href="discos.html">Discos</a></li>
-                <li><a href="sobre.html">Sobre</a></li>
-                <li><a href="contacto.html">Contacto</a></li>
-            </ul>
-        </nav>
-    </header>
+
+<header>
+    <nav>
+        <div class="logo">LTS <span>VINYL-S</span></div>
+        <ul>
+            <li><a href="index.html">Início</a></li>
+            <li><a href="discos.html" class="active">Discos</a></li>
+            <li><a href="contacto.html">Contacto</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="loja-container">
+    <aside class="sidebar">
+        <h3>Filtrar Vinis</h3>
+        
+        <div class="filtro-grupo">
+            <label>Pesquisar</label>
+            <input type="text" id="busca" placeholder="Nome do álbum ou artista...">
+        </div>
+
+        <div class="filtro-grupo">
+            <label>Género</label>
+            <select id="genero">
+                <option value="todos">Todos os Géneros</option>
+                <option value="rock">Rock</option>
+                <option value="jazz">Jazz</option>
+                <option value="pop">Pop</option>
+                <option value="hiphop">Hip Hop</option>
+            </select>
+        </div>
+
+        <div class="filtro-grupo">
+            <label>Preço até</label>
+            <input type="range" min="10" max="100" value="100">
+        </div>
+    </aside>
+
+    <main class="catalogo">
+        <div class="grid-produtos">
+            <div class="card">
+                <div class="disco-img" style="background-image: url('https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=500');"></div>
+                <div class="card-info">
+                    <span class="tag">Rock</span>
+                    <h3>Dark Side of the Moon</h3>
+                    <p class="artista">Pink Floyd</p>
+                    <p class="preco">32.00€</p>
+                    <button class="btn-comprar"><i class="fa-solid fa-cart-shopping"></i> Comprar</button>
+                </div>
+            </div>
+            </div>
+    </main>
+</div>
 </body>
 </html>

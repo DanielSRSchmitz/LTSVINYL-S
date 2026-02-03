@@ -1,0 +1,94 @@
+/* Layout da Loja */
+.loja-container {
+    display: flex;
+    padding: 40px 5%;
+    gap: 30px;
+    background-color: #f4f7f9;
+}
+
+/* Barra Lateral */
+.sidebar {
+    flex: 1;
+    max-width: 280px;
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    height: fit-content;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.sidebar h3 {
+    margin-bottom: 20px;
+    color: var(--dark-blue);
+    font-size: 1.2rem;
+}
+
+.filtro-grupo {
+    margin-bottom: 20px;
+}
+
+.filtro-grupo label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.filtro-grupo input[type="text"], 
+.filtro-grupo select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    outline: none;
+}
+
+/* Catálogo */
+.catalogo {
+    flex: 3;
+}
+
+/* Cards de Vinil Modernos */
+.card-info {
+    padding: 15px 0;
+    text-align: left;
+}
+
+.tag {
+    background: var(--light-blue);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.artista {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+}
+
+.preco {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--dark-blue);
+    margin: 10px 0;
+}
+
+.btn-comprar {
+    width: 100%;
+    background-color: var(--dark-blue);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-comprar:hover {
+    background-color: var(--sky);
+}
