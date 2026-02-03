@@ -72,12 +72,10 @@ nav ul li a.active {
 /* --- HERO SECTION --- */
 .hero {
     height: 70vh;
-    background:url('https://img.freepik.com/vetores-gratis/textura-de-labirinto-de-marmore_1409-9471.jpg?t=st=1770157824~exp=1770161424~hmac=b1b64b0d575d1aafc4a1ee65673a2150849fff7efecb9cc850dd3ce863d706cc');
-    background-size: cover;           /* Garante que ocupa todo o espaço */
-    background-position: center;      /* Centra o padrão */
-    background-repeat: no-repeat;     /* Não deixa a imagem repetir-se */
-    background-attachment: scroll;    /* Melhora a performance em telemóveis */
-    
+    background: linear-gradient(hwb(220 43% 7% / 0.7),hwb(220 43% 7% / 0.7)), 
+                url('https://img.freepik.com/vetores-gratis/textura-de-labirinto-de-marmore_1409-9471.jpg?t=st=1770157824~exp=1770161424~hmac=b1b64b0d575d1aafc4a1ee65673a2150849fff7efecb9cc850dd3ce863d706cc');
+    background-size: cover;
+    background-position: center;
     display: flex;
     align-items: center;
     justify-content: center;
