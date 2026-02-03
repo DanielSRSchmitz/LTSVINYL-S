@@ -84,7 +84,7 @@ nav a:hover {
 }
 
 .highlight {
-    color: var(--primary-blue);
+    color: #829cbc(--primary-blue);
 }
 
 .hero p {
