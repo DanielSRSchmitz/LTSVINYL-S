@@ -20,38 +20,46 @@
     </header>
 
     <main class="admin-container">
+        
         <div class="card-admin">
             <h2 id="titulo-form">Adicionar Novo Disco</h2>
             <form id="formAdmin">
                 <input type="text" id="nome" placeholder="Nome do Disco" required>
                 <input type="text" id="artista" placeholder="Artista" required>
-                <input type="text" id="genero" placeholder="Género" required>
+                <input type="text" id="genero" placeholder="Género (ex: Rock)" required>
                 <input type="number" id="preco" step="0.01" placeholder="Preço (€)" required>
                 <input type="text" id="imagem" placeholder="URL da Imagem da Capa" required>
-                <button type="submit" id="btnSubmit">Cadastrar na Vitrine</button>
-                <button type="button" id="btnCancelar" style="display:none; background:#ccc; margin-top:5px; width:100%; border:none; padding:10px; border-radius:8px; cursor:pointer;">Cancelar Edição</button>
+                
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <button type="submit" id="btnSubmit" style="flex: 1;">Cadastrar na Vitrine</button>
+                    <button type="button" id="btnCancelar" style="display:none; background:#ccc; flex: 1; border:none; padding:10px; border-radius:5px; cursor:pointer; font-weight: bold;">Cancelar</button>
+                </div>
             </form>
             <p id="status" style="text-align: center; margin-top: 10px; font-weight: bold;"></p>
         </div>
 
         <div class="lista-discos">
             <h3>Discos na Vitrine</h3>
-            <div id="container-discos">A verificar ligação ao banco de dados...</div>
+            <div id="container-discos">
+                <p style="text-align: center;">A carregar lista completa...</p>
+            </div>
         </div>
+
     </main>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, doc, deleteDoc, onSnapshot, query, orderBy, serverTimestamp, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, doc, deleteDoc, onSnapshot, serverTimestamp, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+        // AS TUAS CHAVES (Baseadas no teu histórico)
         const firebaseConfig = {
-    apiKey: "BBwuWn4Y0bENTnpuBGUejJZMzyBrQZDwsLAmswPhkFLHOx5_8jXb2GshqsW4VJCVSxVhpCPF4I4wBMf48FxhAiw", // Encontra isto em 'Seus aplicativos'
-    authDomain: "ltsvinils.firebaseapp.com",
-    projectId: "ltsvinils",
-    storageBucket: "ltsvinils.appspot.com",
-    messagingSenderId: "814606881822", // Este é o 'Número do projeto' da tua Imagem 10
-    appId: "814606881822"   // Também em 'Seus aplicativos'
-};
+            apiKey: "AIzaSyBBwuWn4Y0bENTnpuBGUejJZMzyBrQZDws", 
+            authDomain: "ltsvinils.firebaseapp.com",
+            projectId: "itsvinils", 
+            storageBucket: "ltsvinils.appspot.com",
+            messagingSenderId: "814606881822",
+            appId: "1:814606881822:web:9f8jXb2GshqsW4VJCVSxVhp" 
+        };
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
@@ -59,46 +67,57 @@
 
         let editID = null;
 
-        // --- FUNÇÃO PARA RENDERIZAR A LISTA ---
-        function renderLista(snapshot) {
+        // --- LISTAR DISCOS (MÉTODO SEGURO) ---
+        // Aqui removemos o 'orderBy' do Firebase e usamos o JavaScript para ordenar depois.
+        // Isto garante que discos antigos (sem data) apareçam na lista.
+        onSnapshot(discosRef, (snapshot) => {
             const container = document.getElementById('container-discos');
             container.innerHTML = "";
             
             if (snapshot.empty) {
-                container.innerHTML = "<p style='text-align:center; padding: 20px;'>Nenhum disco encontrado na base de dados.</p>";
+                container.innerHTML = "<p style='text-align:center; padding: 20px;'>Nenhum disco encontrado.</p>";
                 return;
             }
 
-            snapshot.forEach((d) => {
-                const disco = d.data();
+            // 1. Converter para Array
+            let listaDiscos = [];
+            snapshot.forEach(doc => {
+                listaDiscos.push({ id: doc.id, ...doc.data() });
+            });
+
+            // 2. Ordenar no Navegador (Mais recentes primeiro)
+            // Se não tiver data, coloca no fim da lista
+            listaDiscos.sort((a, b) => {
+                const dataA = a.data ? a.data.seconds : 0;
+                const dataB = b.data ? b.data.seconds : 0;
+                return dataB - dataA;
+            });
+
+            // 3. Renderizar HTML
+            listaDiscos.forEach((disco) => {
                 container.innerHTML += `
                     <div class="item-disco">
-                        <img src="${disco.imagem}" onerror="this.src='https://via.placeholder.com/60'">
+                        <img src="${disco.imagem}" onerror="this.src='https://via.placeholder.com/60?text=Capa'">
                         <div class="info-disco">
-                            <strong>${disco.titulo || "Sem título"}</strong>
+                            <strong>${disco.titulo || "Sem Nome"}</strong>
                             <small>${disco.artista} — ${disco.preco}€</small>
                         </div>
-                        <div class="acoes" style="display: flex; gap: 5px;">
-                            <button class="btn-editar" onclick="prepararEdicao('${d.id}', '${disco.titulo}', '${disco.artista}', '${disco.genero}', '${disco.preco}', '${disco.imagem}')">Editar</button>
-                            <button class="btn-apagar" onclick="apagarDisco('${d.id}')">Apagar</button>
+                        <div class="acoes">
+                            <button class="btn-editar" onclick="prepararEdicao('${disco.id}', '${disco.titulo}', '${disco.artista}', '${disco.genero}', '${disco.preco}', '${disco.imagem}')">Editar</button>
+                            <button class="btn-apagar" onclick="apagarDisco('${disco.id}')">Apagar</button>
                         </div>
                     </div>`;
             });
-        }
-
-        // --- LISTAR DISCOS (Tenta ordenado, se falhar mostra tudo) ---
-        const q = query(discosRef, orderBy("data", "desc"));
-        onSnapshot(q, (snapshot) => {
-            renderLista(snapshot);
         }, (error) => {
-            console.warn("Ordenação falhou, a mostrar lista simples:", error);
-            onSnapshot(discosRef, (snap) => renderLista(snap));
+            console.error("Erro:", error);
+            document.getElementById('container-discos').innerHTML = `<p style="color:red; text-align:center;">Erro ao carregar: ${error.message}</p>`;
         });
 
-        // --- ADICIONAR / ATUALIZAR ---
+        // --- ADICIONAR / EDITAR ---
         document.getElementById('formAdmin').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btnSubmit');
+            const status = document.getElementById('status');
             btn.disabled = true;
 
             const dados = {
@@ -107,28 +126,32 @@
                 genero: document.getElementById('genero').value,
                 preco: parseFloat(document.getElementById('preco').value),
                 imagem: document.getElementById('imagem').value,
-                data: serverTimestamp()
+                data: serverTimestamp() // Sempre atualiza a data ao editar/criar
             };
 
             try {
                 if (editID) {
                     await updateDoc(doc(db, "discos", editID), dados);
-                    alert("Disco atualizado!");
+                    status.innerText = "✅ Disco atualizado!";
+                    status.style.color = "green";
                     cancelarEdicao();
                 } else {
                     await addDoc(discosRef, dados);
-                    alert("Disco adicionado com sucesso!");
+                    status.innerText = "✅ Disco cadastrado!";
+                    status.style.color = "green";
                 }
                 e.target.reset();
             } catch (err) {
-                alert("Erro ao guardar dados: " + err.message);
+                status.innerText = "❌ Erro: " + err.message;
+                status.style.color = "red";
                 console.error(err);
             } finally {
                 btn.disabled = false;
+                setTimeout(() => status.innerText = "", 3000);
             }
         });
 
-        // --- FUNÇÕES GLOBAIS ---
+        // --- FUNÇÕES DE APOIO ---
         window.prepararEdicao = (id, titulo, artista, genero, preco, imagem) => {
             editID = id;
             document.getElementById('nome').value = titulo;
@@ -136,6 +159,7 @@
             document.getElementById('genero').value = genero;
             document.getElementById('preco').value = preco;
             document.getElementById('imagem').value = imagem;
+            
             document.getElementById('titulo-form').innerText = "Editar Disco";
             document.getElementById('btnSubmit').innerText = "Guardar Alterações";
             document.getElementById('btnCancelar').style.display = "block";
@@ -151,11 +175,15 @@
         };
 
         window.apagarDisco = async (id) => {
-            if(confirm("Deseja apagar este disco permanentemente?")) {
-                await deleteDoc(doc(db, "discos", id));
+            if(confirm("Tens a certeza que queres apagar este disco?")) {
+                try {
+                    await deleteDoc(doc(db, "discos", id));
+                } catch (err) {
+                    alert("Erro ao apagar: " + err.message);
+                }
             }
         };
-        
+
         document.getElementById('btnCancelar').onclick = window.cancelarEdicao;
     </script>
 </body>
