@@ -143,32 +143,54 @@ nav ul li a.active {
 
 .grid-produtos {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 25px;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+    align-items: stretch; /* Garante que os cards na mesma linha tenham a mesma altura */
 }
 
+/* --- CARD --- */
 .card {
     background: white;
-    padding: 15px;
-    border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    transition: 0.3s ease;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column; /* Organiza o conteúdo em coluna */
+    justify-content: space-between; /* Empurra o botão para o fundo */
+    transition: 0.3s;
 }
 
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-}
-
+/* --- IMAGEM DO DISCO --- */
 .disco-img {
     width: 100%;
-    aspect-ratio: 1 / 1; /* Força a imagem a ser um quadrado perfeito */
-    background-size: contain; /* Faz a imagem caber inteira sem cortar */
+    aspect-ratio: 1 / 1; /* Cria um quadrado perfeito */
+    background-size: contain; /* Mostra a imagem toda sem cortar */
     background-repeat: no-repeat;
     background-position: center;
-    background-color: #f0f0f0; /* Fundo cinza leve caso a imagem seja menor */
-    border-radius: 8px;
+    background-color: #f8f9fa; /* Fundo neutro para preencher espaços vazios */
+    border-radius: 10px;
     margin-bottom: 15px;
+}
+
+/* --- CONTEÚDO DO CARD --- */
+.card-info {
+    flex-grow: 1; /* Faz esta parte ocupar o espaço disponível */
+    display: flex;
+    flex-direction: column;
+}
+
+.card h3 {
+    font-size: 1.1rem;
+    margin: 10px 0 5px;
+    min-height: 2.4em; /* Garante espaço para 2 linhas de título, mantendo o alinhamento */
+}
+
+.artista { color: #666; font-size: 0.9rem; margin-bottom: 10px; }
+
+.preco {
+    font-size: 1.3rem;
+    font-weight: 800;
+    margin: auto 0 15px 0; /* O "auto" empurra o preço para cima do botão */
 }
 
 .tag {
@@ -181,16 +203,7 @@ nav ul li a.active {
     text-transform: uppercase;
 }
 
-.card h3 { margin: 10px 0 5px 0; font-size: 1.1rem; }
 
-.artista { color: #666; font-size: 0.9rem; margin-bottom: 10px; }
-
-.preco {
-    font-size: 1.3rem;
-    font-weight: 800;
-    color: var(--dark-blue);
-    margin-bottom: 15px;
-}
 
 .btn-comprar {
     width: 100%;
