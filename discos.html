@@ -15,7 +15,6 @@
         <ul>
             <li><a href="index.html">Início</a></li>
             <li><a href="discos.html" class="active">Discos</a></li>
-            <li><a href="sobre.html">Sobre</a></li>
             <li><a href="contacto.html">Contacto</a></li>
         </ul>
     </nav>
@@ -24,12 +23,10 @@
 <div class="loja-container">
     <aside class="sidebar">
         <h3>Filtrar Vinis</h3>
-        
         <div class="filtro-grupo">
             <label>Pesquisar</label>
             <input type="text" id="busca" placeholder="Nome do álbum ou artista...">
         </div>
-
         <div class="filtro-grupo">
             <label>Género</label>
             <select id="genero">
@@ -40,90 +37,109 @@
                 <option value="hiphop">Hip Hop</option>
             </select>
         </div>
-
         <div class="filtro-grupo">
             <label>Preço até</label>
-            <input type="range" id="precoRange" min="10" max="100" value="100">
-            <span id="precoValor">100€</span>
+            <input type="range" id="precoRange" min="10" max="150" value="150">
+            <span id="precoValor">150€</span>
         </div>
     </aside>
 
     <main class="catalogo">
         <div class="grid-produtos" id="grid-produtos">
-            
-            <div class="card" data-genero="pop" data-preco="34">
-                <div class="disco-img" style="background-image: url('https://m.media-amazon.com/images/I/71dtYuD2+-L._SL1500_.jpg');"></div> 
-                <div class="card-info">
-                    <span class="tag">Pop</span>
-                    <h3>HIT ME HARD AND SOFT</h3>
-                    <p class="artista">Billie Eilish</p>
-                    <p class="preco">33.87€</p>
-                    <button class="btn-comprar"><i class="fa-solid fa-cart-shopping"></i> Comprar</button>
-                </div>
-            </div>
-
-            <div class="card" data-genero="pop" data-preco="25">
-                <div class="disco-img" style="background-image: url('https://upload.wikimedia.org/wikipedia/pt/e/e8/Happier_Than_Ever_%28%C3%A1lbum%29_-_Billie_Eilish.png');"></div>
-                <div class="card-info">
-                    <span class="tag">Pop</span>
-                    <h3>Happier Than Ever</h3>
-                    <p class="artista">Billie Eilish</p>
-                    <p class="preco">25.00€</p>
-                    <button class="btn-comprar"><i class="fa-solid fa-cart-shopping"></i> Comprar</button>
-                </div>
-            </div>
-
-            <div class="card" data-genero="pop" data-preco="25">
-                <div class="disco-img" style="background-image: url('https://m.media-amazon.com/images/I/61e23dfEOBL._SX425_.jpg');"></div>
-                <div class="card-info">
-                    <span class="tag">Pop</span>
-                    <h3>WHEN WE ALL FALL ASLEEP...</h3>
-                    <p class="artista">Billie Eilish</p>
-                    <p class="preco">25.00€</p>
-                    <button class="btn-comprar"><i class="fa-solid fa-cart-shopping"></i> Comprar</button>
-                </div>
-            </div>
-
+            <p id="status">A carregar discos do Firebase...</p>
         </div>
     </main>
 </div>
 
-<script>
-    const busca = document.getElementById('busca');
-    const generoFiltro = document.getElementById('genero');
-    const precoRange = document.getElementById('precoRange');
-    const precoValor = document.getElementById('precoValor');
+<script type="module">
+    // Importar SDKs do Firebase (Versão Modular 9+)
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    // --- COPIA OS TEUS DADOS DO FIREBASE AQUI ---
+    const firebaseConfig = {
+    apiKey: "BBwuWn4Y0bENTnpuBGUejJZMzyBrQZDwsLAmswPhkFLHOx5_8jXb2GshqsW4VJCVSxVhpCPF4I4wBMf48FxhAiw", // Encontra isto em 'Seus aplicativos'
+    authDomain: "ltsvinils.firebaseapp.com",
+    projectId: "ltsvinils",
+    storageBucket: "ltsvinils.appspot.com",
+    messagingSenderId: "814606881822", // Este é o 'Número do projeto' da tua Imagem 10
+    appId: "814606881822"   // Também em 'Seus aplicativos'
+};
+
+    // Inicializar Firebase e Firestore
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
     const grid = document.getElementById('grid-produtos');
+    
+    let todosOsDiscos = [];
 
-    function filtrar() {
-        const texto = busca.value.toLowerCase();
-        const generoSelecionado = generoFiltro.value.toLowerCase();
-        const precoMaximo = parseInt(precoRange.value);
-        const cards = document.querySelectorAll('.card');
-        
-        precoValor.innerText = precoMaximo + "€";
+    // 1. Função para carregar discos da coleção 'discos'
+    async function carregarDiscos() {
+        try {
+            const querySnapshot = await getDocs(collection(db, "discos"));
+            todosOsDiscos = [];
+            
+            querySnapshot.forEach((doc) => {
+                todosOsDiscos.push({ id: doc.id, ...doc.data() });
+            });
 
-        cards.forEach(card => {
-            const nome = card.querySelector('h3').innerText.toLowerCase();
-            const artista = card.querySelector('.artista').innerText.toLowerCase();
-            const generoCard = card.getAttribute('data-genero').toLowerCase();
-            const precoCard = parseInt(card.getAttribute('data-preco'));
+            renderizarCards(todosOsDiscos);
+        } catch (error) {
+            console.error("Erro ao carregar:", error);
+            grid.innerHTML = "<p>Erro ao carregar dados do Firebase. Verifica as permissões.</p>";
+        }
+    }
 
-            const bateTexto = nome.includes(texto) || artista.includes(texto);
-            const bateGenero = generoSelecionado === 'todos' || generoCard === generoSelecionado;
-            const batePreco = precoCard <= precoMaximo;
+    // 2. Renderizar os cards no HTML
+    function renderizarCards(lista) {
+        grid.innerHTML = "";
+        if (lista.length === 0) {
+            grid.innerHTML = "<p>Nenhum vinil encontrado na base de dados.</p>";
+            return;
+        }
 
-            if (bateTexto && bateGenero && batePreco) {
-                card.style.display = "flex";
-            } else {
-                card.style.display = "none";
-            }
+        lista.forEach(disco => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <div class="disco-img" style="background-image: url('${disco.imagem}');"></div>
+                <div class="card-info">
+                    <span class="tag">${disco.genero}</span>
+                    <h3>${disco.titulo}</h3>
+                    <p class="artista">${disco.artista}</p>
+                    <p class="preco">${parseFloat(disco.preco).toFixed(2)}€</p>
+                    <button class="btn-comprar"><i class="fa-solid fa-cart-shopping"></i> Comprar</button>
+                </div>
+            `;
+            grid.appendChild(card);
         });
     }
 
-    busca.addEventListener('keyup', filtrar);
-    generoFiltro.addEventListener('change', filtrar);
-    precoRange.addEventListener('input', filtrar);
+    // 3. Sistema de Filtros
+    function filtrar() {
+        const texto = document.getElementById('busca').value.toLowerCase();
+        const generoSel = document.getElementById('genero').value.toLowerCase();
+        const precoMax = parseInt(document.getElementById('precoRange').value);
+        document.getElementById('precoValor').innerText = precoMax + "€";
+
+        const filtrados = todosOsDiscos.filter(disco => {
+            const bateTexto = disco.titulo.toLowerCase().includes(texto) || 
+                             disco.artista.toLowerCase().includes(texto);
+            const bateGenero = generoSel === 'todos' || disco.genero.toLowerCase() === generoSel;
+            const batePreco = parseFloat(disco.preco) <= precoMax;
+            return bateTexto && bateGenero && batePreco;
+        });
+
+        renderizarCards(filtrados);
+    }
+
+    // Listeners
+    document.getElementById('busca').addEventListener('keyup', filtrar);
+    document.getElementById('genero').addEventListener('change', filtrar);
+    document.getElementById('precoRange').addEventListener('input', filtrar);
+
+    // Iniciar
+    carregarDiscos();
 </script>
 </body>
 </html>
