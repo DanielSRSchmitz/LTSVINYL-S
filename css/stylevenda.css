@@ -185,8 +185,6 @@ nav ul li a.active {
     min-height: 2.4em; /* Garante espaço para 2 linhas de título, mantendo o alinhamento */
 }
 
-.artista { color: #666; font-size: 0.9rem; margin-bottom: 10px; }
-
 .preco {
     font-size: 1.3rem;
     font-weight: 800;
@@ -203,6 +201,9 @@ nav ul li a.active {
     text-transform: uppercase;
 }
 
+.card h3 { margin: 10px 0 5px 0; font-size: 1.1rem; }
+
+.artista { color: #666; font-size: 0.9rem; margin-bottom: 10px; }
 
 
 .btn-comprar {
