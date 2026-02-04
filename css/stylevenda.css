@@ -109,32 +109,37 @@ nav ul li a.active {
 
 .grid-produtos {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 30px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
+    gap: 20px;
     align-items: stretch;
 }
 
+/* --- AJUSTE NO CARD --- */
 .card {
     background: white;
-    padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    padding: 15px; 
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    max-width: 250px; 
+    margin: 0 auto; 
     transition: 0.3s;
 }
 
-/* --- IMAGEM DO DISCO (SOLUÇÃO PARA APARECER TUDO) --- */
+/* --- IMAGEM DO DISCO (TAMANHO UNIFORME 200px) --- */
 .disco-img {
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    background-size: contain; /* Não corta a imagem */
+    width: 200px; 
+    height: 200px;
+    margin: 0 auto 15px auto; 
+    
+    background-size: contain; /* Garante que a imagem apareça toda */
     background-repeat: no-repeat;
     background-position: center;
     background-color: #f8f9fa; 
-    border-radius: 10px;
-    margin-bottom: 15px;
+    border-radius: 8px;
+    display: block;
 }
 
 /* --- CONTEÚDO DO CARD --- */
