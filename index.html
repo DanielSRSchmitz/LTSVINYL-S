@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LTS VINYL'S</title>
+    <title>LTS VINYL'S | Início</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -30,29 +30,65 @@
     </main>
 
     <section class="destaques">
-        <h2>Novidades na Loja</h2>
-        <div class="grid-produtos">
-            <div class="card">
-                <div class="disco-img"></div>
-                <h3>Classic Jazz</h3>
-                <p>24.90€</p>
-                <button>Ver Detalhes</button>
-            </div>
-            <div class="card">
-                <div class="disco-img"></div>
-                <h3>Rock Anthems</h3>
-                <p>29.00€</p>
-                <button>Ver Detalhes</button>
-            </div>
-            <div class="card">
-                <div class="disco-img"></div>
-                <h3>Blues Night</h3>
-                <p>22.50€</p>
-                <button>Ver Detalhes</button>
-            </div>
-            
+        <h2>Últimas Novidades</h2>
+        <div class="grid-produtos" id="destaques-container">
+            <p style="text-align: center; grid-column: 1/-1;">A carregar as novidades...</p>
         </div>
     </section>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // Configuração do teu projeto (usa os teus dados reais aqui)
+        const firebaseConfig = {
+    apiKey: "BBwuWn4Y0bENTnpuBGUejJZMzyBrQZDwsLAmswPhkFLHOx5_8jXb2GshqsW4VJCVSxVhpCPF4I4wBMf48FxhAiw", // Encontra isto em 'Seus aplicativos'
+    authDomain: "ltsvinils.firebaseapp.com",
+    projectId: "ltsvinils",
+    storageBucket: "ltsvinils.appspot.com",
+    messagingSenderId: "814606881822", // Este é o 'Número do projeto' da tua Imagem 10
+    appId: "814606881822"   // Também em 'Seus aplicativos'
+};
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        async function carregarDestaques() {
+            const container = document.getElementById('destaques-container');
+            
+            try {
+                // Consulta: Coleção 'discos', ordenado por data (mais recente primeiro), limite de 3
+                const q = query(collection(db, "discos"), orderBy("data", "desc"), limit(3));
+                const querySnapshot = await getDocs(q);
+                
+                container.innerHTML = ""; // Limpa o texto de carregamento
+
+                if (querySnapshot.empty) {
+                    container.innerHTML = "<p style='grid-column: 1/-1;'>Ainda não há discos em destaque.</p>";
+                    return;
+                }
+
+                querySnapshot.forEach((doc) => {
+                    const disco = doc.data();
+                    // Injeta o HTML usando exatamente as classes do teu CSS
+                    container.innerHTML += `
+                        <div class="card">
+                            <div class="disco-img" style="background-image: url('${disco.imagem}'); background-size: cover; background-position: center;"></div>
+                            <h3>${disco.titulo}</h3>
+                            <p>${disco.artista}</p>
+                            <p class="preco">${disco.preco}€</p>
+                            <a href="discos.html" class="btn" style="padding: 10px 20px; font-size: 0.8rem; margin-top: 10px;">Ver Detalhes</a>
+                        </div>
+                    `;
+                });
+            } catch (error) {
+                console.error("Erro ao carregar destaques:", error);
+                container.innerHTML = "<p style='grid-column: 1/-1;'>Erro ao carregar novidades. Verifica a consola.</p>";
+            }
+        }
+
+        carregarDestaques();
+    </script>
 
 </body>
 </html>
