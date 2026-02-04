@@ -2,47 +2,39 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - LTS VINYL'S</title>
-    <link rel="stylesheet" href="css/styleadm.css">
+    <title>Painel Admin - LTS VINYL'S</title>
+    <style>
+        body { font-family: sans-serif; background: #f0f2f5; display: flex; justify-content: center; padding: 50px; }
+        .card-admin { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
+        h2 { color: #1a2e51; text-align: center; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        button { width: 100%; padding: 15px; background: #1a2e51; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #2c4a85; }
+        #status { text-align: center; margin-top: 15px; font-weight: bold; }
+    </style>
 </head>
 <body>
 
-<div class="admin-container">
-    <h2>Cadastrar Novo Vinil</h2>
-    
-    <form id="formDisco">
-        <div class="form-group">
-            <label for="nome">Nome do Álbum</label>
-            <input type="text" id="nome" placeholder="Ex: Hit Me Hard and Soft" required>
-        </div>
-
-        <div class="form-group">
-            <label for="preco">Preço (R$)</label>
-            <input type="number" id="preco" step="0.01" placeholder="Ex: 33.87" required>
-        </div>
-
-        <div class="form-group">
-            <label for="imagem">Link da Imagem (URL)</label>
-            <input type="url" id="imagem" placeholder="https://link-da-foto.jpg" required>
-        </div>
-
-        <button type="submit" id="btnEnviar">Adicionar ao Estoque</button>
+<div class="card-admin">
+    <h2>Adicionar Novo Disco</h2>
+    <form id="formAdmin">
+        <input type="text" id="nome" placeholder="Nome do Disco (Ex: Thriller)" required>
+        <input type="number" id="preco" step="0.01" placeholder="Preço (Ex: 150.00)" required>
+        <input type="text" id="imagem" placeholder="URL da Imagem da Capa" required>
+        <button type="submit" id="btn">Cadastrar na Vitrine</button>
     </form>
-    
-    <div id="mensagem"></div>
+    <div id="status"></div>
 </div>
 
 <script>
-    const form = document.getElementById('formDisco');
-    const msgDiv = document.getElementById('mensagem');
+    const form = document.getElementById('formAdmin');
+    const status = document.getElementById('status');
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        
-        const btn = document.getElementById('btnEnviar');
-        btn.innerText = "Enviando...";
+        const btn = document.getElementById('btn');
         btn.disabled = true;
+        btn.innerText = "Enviando...";
 
         const dados = {
             nome: document.getElementById('nome').value,
@@ -51,31 +43,29 @@
         };
 
         try {
-            // Usando o endpoint que você já validou no Render
-            const resposta = await fetch('https://ltsvinyl-s-6jc6.onrender.com/discos', {
+            // Enviando para o seu link do Render que já está funcionando
+            const res = await fetch('https://ltsvinyl-s-6jc6.onrender.com/discos', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(dados)
             });
 
-            if (resposta.ok) {
-                msgDiv.style.display = "block";
-                msgDiv.style.color = "green";
-                msgDiv.innerText = "✅ Disco adicionado com sucesso!";
+            if(res.ok) {
+                status.innerText = "✅ Disco adicionado com sucesso!";
+                status.style.color = "green";
                 form.reset();
             } else {
-                throw new Error("Erro no servidor");
+                status.innerText = "❌ Erro ao salvar.";
+                status.style.color = "red";
             }
-        } catch (erro) {
-            msgDiv.style.display = "block";
-            msgDiv.style.color = "red";
-            msgDiv.innerText = "❌ Erro ao conectar com o servidor.";
+        } catch (err) {
+            status.innerText = "❌ Erro de conexão.";
+            status.style.color = "red";
         } finally {
-            btn.innerText = "Adicionar ao Estoque";
             btn.disabled = false;
+            btn.innerText = "Cadastrar na Vitrine";
         }
     });
 </script>
-
 </body>
 </html>
