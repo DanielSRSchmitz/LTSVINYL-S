@@ -4,26 +4,19 @@
     <meta charset="UTF-8">
     <title>Painel Admin - LTS VINYL'S</title>
     <link rel="stylesheet" href="css/styleadm.css">
-    <style>
-        body { font-family: sans-serif; background: #f0f2f5; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        .card-admin { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); width: 100%; max-width: 400px; margin-bottom: 30px; }
-        h2 { color: #1a2e51; text-align: center; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        button { width: 100%; padding: 15px; background: #1a2e51; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
-        button:hover { background: #2c4a85; }
-        
-        /* Estilos da Lista de Discos */
-        .lista-discos { width: 100%; max-width: 600px; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-        .item-disco { display: flex; align-items: center; justify-content: space-between; padding: 10px; border-bottom: 1px solid #eee; }
-        .item-disco img { width: 50px; height: 50px; object-fit: cover; border-radius: 5px; }
-        .info-disco { flex-grow: 1; margin-left: 15px; }
-        .btn-apagar { background: #ff4757; width: auto; padding: 8px 12px; font-size: 12px; }
-        .btn-apagar:hover { background: #ff6b81; }
-        #status { text-align: center; margin-top: 15px; font-weight: bold; }
-    </style>
 </head>
 <body>
-
+<header>
+        <nav>
+            <div class="logo">LTS <span>VINYL-S</span></div>
+            <ul>
+                <li><a href="index.html">Início</a></li>
+                <li><a href="discos.html">Discos</a></li>
+                <li><a href="sobre.html" class="active">Sobre</a></li>
+                <li><a href="contacto.html">Contacto</a></li>
+            </ul>
+        </nav>
+    </header>
 <div class="card-admin">
     <h2>Adicionar Novo Disco</h2>
     <form id="formAdmin">
