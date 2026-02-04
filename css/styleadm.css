@@ -2,13 +2,10 @@
 :root {
     --dark-blue: #1D3461;
     --navy: #1F487E;
-    --ocean: #376996;
     --sky: #6290C8;
-    --light-blue: #829CBC;
     --white: #ffffff;
     --bg-admin: #f0f2f5;
     --danger: #ff4757;
-    --danger-hover: #ff6b81;
 }
 
 * {
@@ -19,18 +16,17 @@
 }
 
 body {
-    background-color: var(--white);
+    background-color: var(--bg-admin);
     color: var(--dark-blue);
     line-height: 1.6;
+    min-height: 100vh;
 }
 
-/* --- HEADER E NAVEGAÇÃO --- */
+/* --- HEADER (Largura Total) --- */
 header {
     background-color: var(--dark-blue);
-    padding: 1.5rem 5%;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
+    padding: 1rem 5%;
+    width: 100%;
     box-shadow: 0 2px 10px rgba(0,0,0,0.2);
 }
 
@@ -38,247 +34,108 @@ nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 .logo {
     color: var(--white);
     font-size: 1.6rem;
     font-weight: 800;
-    letter-spacing: 1px;
     text-transform: uppercase;
 }
 
-.logo span {
-    color: var(--sky);
-}
+.logo span { color: var(--sky); }
 
-nav ul {
-    display: flex;
-    list-style: none;
-}
+nav ul { display: flex; list-style: none; }
 
 nav ul li a {
     color: var(--white) !important;
     text-decoration: none !important;
     margin-left: 25px;
-    font-size: 1rem;
     font-weight: 500;
-    transition: 0.3s ease;
+    transition: 0.3s;
 }
 
-nav ul li a:hover, 
-nav ul li a.active {
-    color: var(--sky) !important;
-}
+nav ul li a:hover, nav ul li a.active { color: var(--sky) !important; }
 
-/* --- ESTILOS DO PAINEL ADMIN --- */
-/* Centraliza o conteúdo apenas na página admin */
-.admin-body {
-    background-color: var(--bg-admin);
+/* --- CONTENTOR CENTRALIZADOR --- */
+.admin-container {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: center; /* Centraliza horizontalmente os cards */
     padding: 40px 20px;
-    min-height: 100vh;
+    width: 100%;
 }
 
-.card-admin { 
-    background: var(--white); 
-    padding: 30px; 
-    border-radius: 15px; 
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1); 
-    width: 100%; 
-    max-width: 400px; 
-    margin-bottom: 30px; 
+/* --- CARDS (Formulário e Lista) --- */
+.card-admin, .lista-discos {
+    background: var(--white);
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 500px; /* Mantém uma largura elegante no centro */
+    margin-bottom: 30px;
 }
 
-.card-admin h2 { 
-    color: var(--dark-blue); 
-    text-align: center; 
+.card-admin h2, .lista-discos h3 {
+    text-align: center;
     margin-bottom: 20px;
+    color: var(--dark-blue);
 }
 
-.card-admin input { 
-    width: 100%; 
-    padding: 12px; 
-    margin: 10px 0; 
-    border: 1px solid #ddd; 
-    border-radius: 8px; 
-    box-sizing: border-box; 
+/* --- FORMULÁRIO --- */
+input {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
 }
 
-.card-admin button { 
-    width: 100%; 
-    padding: 15px; 
-    background: var(--dark-blue); 
-    color: var(--white); 
-    border: none; 
-    border-radius: 8px; 
-    cursor: pointer; 
-    font-weight: bold; 
+button[type="submit"] {
+    width: 100%;
+    padding: 15px;
+    background: var(--dark-blue);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 10px;
     transition: 0.3s;
 }
 
-.card-admin button:hover { 
-    background: var(--navy); 
-}
+button[type="submit"]:hover { background: var(--navy); }
 
-/* Estilos da Lista de Discos no Admin */
-.lista-discos { 
-    width: 100%; 
-    max-width: 600px; 
-    background: var(--white); 
-    padding: 20px; 
-    border-radius: 15px; 
-    box-shadow: 0 5px 15px rgba(0,0,0,0.05); 
-}
-
-.item-disco { 
-    display: flex; 
-    align-items: center; 
-    justify-content: space-between; 
-    padding: 15px; 
-    border-bottom: 1px solid #eee; 
-}
-
-.item-disco:last-child {
-    border-bottom: none;
-}
-
-.item-disco img { 
-    width: 60px; 
-    height: 60px; 
-    object-fit: cover; 
-    border-radius: 8px; 
-}
-
-.info-disco { 
-    flex-grow: 1; 
-    margin-left: 15px; 
-}
-
-.info-disco strong {
-    color: var(--dark-blue);
-    display: block;
-}
-
-.btn-apagar { 
-    background: var(--danger) !important; 
-    width: auto !important; 
-    padding: 8px 15px !important; 
-    font-size: 12px !important; 
-}
-
-.btn-apagar:hover { 
-    background: var(--danger-hover) !important; 
-}
-
-#status { 
-    text-align: center; 
-    margin-top: 15px; 
-    font-weight: bold; 
-}
-
-/* --- HERO, DESTAQUES E CARDS (PÁGINA INICIAL) --- */
-.hero {
-    height: 70vh;
-    background: linear-gradient(#6e98edb3,#6e98edb3), 
-                url('https://img.freepik.com/vetores-gratis/textura-de-labirinto-de-marmore_1409-9471.jpg?t=st=1770157824~exp=1770161424~hmac=b1b64b0d575d1aafc4a1ee65673a2150849fff7efecb9cc850dd3ce863d706cc');
-    background-size: cover;
-    background-position: center;
+/* --- ITENS DA LISTA --- */
+.item-disco {
     display: flex;
     align-items: center;
-    justify-content: center;
-    text-align: center;
-    color: var(--white);
-    padding: 0 20px;
+    gap: 15px;
+    padding: 15px 0;
+    border-bottom: 1px solid #eee;
 }
 
-.hero-content h1 {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-}
-
-.btn {
-    display: inline-block;
-    background-color: var(--sky);
-    color: var(--white) !important;
-    padding: 12px 35px;
-    text-decoration: none !important;
-    border-radius: 50px;
-    font-weight: bold;
-    margin-top: 25px;
-    transition: 0.3s;
-    border: none;
-    cursor: pointer;
-}
-
-.btn:hover {
-    background-color: var(--ocean);
-    transform: translateY(-2px);
-}
-
-.destaques {
-    padding: 60px 5%;
-    text-align: center;
-}
-
-.destaques h2 {
-    margin-bottom: 40px;
-    font-size: 2rem;
-    position: relative;
-    padding-bottom: 10px;
-    color: var(--dark-blue);
-}
-
-.destaques h2::after {
-    content: '';
+.item-disco img {
     width: 60px;
-    height: 4px;
-    background: var(--sky);
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
+    height: 60px;
+    object-fit: cover;
+    border-radius: 8px;
 }
 
-.grid-produtos {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 30px;
-}
+.info-disco { flex-grow: 1; }
+.info-disco strong { display: block; color: var(--dark-blue); }
 
-.card {
-    background: #f9f9f9;
-    padding: 20px;
-    border-radius: 15px;
-    transition: 0.3s;
-    border: 1px solid #eee;
-}
-
-.card:hover {
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-}
-
-.disco-img {
-    width: 100%;
-    height: 250px;
-    background-color: var(--light-blue);
-    border-radius: 10px;
-    margin-bottom: 20px;
-    background-size: cover;
-    background-position: center;
-}
-
-.card h3 {
-    margin-bottom: 10px;
-    color: var(--dark-blue);
-}
-
-.preco {
+.btn-apagar {
+    background: var(--danger);
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
     font-weight: bold;
-    color: var(--navy);
-    font-size: 1.2rem;
-    margin-bottom: 15px;
 }
