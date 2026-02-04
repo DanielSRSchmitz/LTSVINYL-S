@@ -16,15 +16,15 @@ admin.initializeApp({
 const db = admin.firestore();
 
 // 2. Rota para listar os vinis (Vitrine)
-app.get('/discos', async (req, res) => {
-  try {
-    const snapshot = await db.collection('discos').get();
-    const listaDiscos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    res.status(200).json(listaDiscos);
-  } catch (error) {
-    res.status(500).send("Erro ao buscar discos: " + error.message);
-  }
-});
+app.post('/discos', async (req, res) => {
+    try {
+      const novoDisco = req.body; 
+      const docRef = await db.collection('discos').add(novoDisco);
+      res.status(201).json({ id: docRef.id, mensagem: "Disco adicionado!" });
+    } catch (error) {
+      res.status(500).send("Erro ao salvar: " + error.message);
+    }
+  });
 
 // 3. Rota para receber um novo pedido de venda
 app.post('/venda', async (req, res) => {
