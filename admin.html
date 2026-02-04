@@ -20,6 +20,7 @@
     </header>
 
     <main class="admin-container">
+        
         <div class="card-admin">
             <h2>Adicionar Novo Disco</h2>
             <form id="formAdmin">
@@ -37,49 +38,74 @@
             <h3>Discos na Vitrine</h3>
             <div id="container-discos">Carregando discos...</div>
         </div>
+
     </main>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc, doc, deleteDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+        // CONFIGURAÇÃO (Verifica se estes dados coincidem com o teu Firebase Console)
         const firebaseConfig = {
-            apiKey: "AIzaSyBBwuWn4Y0bENTnpuBGUejJZMzyBrQZDws", // Exemplo, usa a tua completa
-            authDomain: "ltsvinils.firebaseapp.com",
-            projectId: "itsvinils", 
-            storageBucket: "ltsvinils.appspot.com",
-            messagingSenderId: "814606881822",
-            appId: "1:814606881822:web:9f8jXb2GshqsW4VJCVSxVhp" // Exemplo, usa a tua completa
-        };
+    apiKey: "BBwuWn4Y0bENTnpuBGUejJZMzyBrQZDwsLAmswPhkFLHOx5_8jXb2GshqsW4VJCVSxVhpCPF4I4wBMf48FxhAiw", // Encontra isto em 'Seus aplicativos'
+    authDomain: "ltsvinils.firebaseapp.com",
+    projectId: "ltsvinils",
+    storageBucket: "ltsvinils.appspot.com",
+    messagingSenderId: "814606881822", // Este é o 'Número do projeto' da tua Imagem 10
+    appId: "814606881822"   // Também em 'Seus aplicativos'
+};
+
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const discosRef = collection(db, "discos");
 
-        // Listar com ordenação por data
-        const q = query(discosRef, orderBy("data", "desc"));
-        onSnapshot(q, (snapshot) => {
+        // FUNÇÃO PARA RENDERIZAR A LISTA
+        function renderLista(snapshot) {
             const container = document.getElementById('container-discos');
             container.innerHTML = "";
+            
+            if (snapshot.empty) {
+                container.innerHTML = "<p style='text-align:center;'>Nenhum disco encontrado.</p>";
+                return;
+            }
+
             snapshot.forEach((d) => {
                 const disco = d.data();
                 container.innerHTML += `
                     <div class="item-disco">
                         <img src="${disco.imagem}" onerror="this.src='https://via.placeholder.com/60'">
                         <div class="info-disco">
-                            <strong>${disco.titulo}</strong>
+                            <strong>${disco.titulo || disco.nome}</strong>
                             <small>${disco.artista} — ${disco.preco}€</small>
                         </div>
                         <button class="btn-apagar" onclick="apagarDisco('${d.id}')">Apagar</button>
-                    </div>`;
+                    </div>
+                `;
             });
-        });
+        }
 
-        // Adicionar com campo de data do servidor
+        // TENTAR LISTAR COM ORDEM (Se falhar, lista sem ordem)
+        try {
+            const q = query(discosRef, orderBy("data", "desc"));
+            onSnapshot(q, (snapshot) => {
+                renderLista(snapshot);
+            }, (error) => {
+                console.warn("Erro na ordenação (provavelmente falta o campo 'data' nos discos antigos):", error);
+                // Fallback: Lista sem ordem para que possas ver e apagar os antigos
+                onSnapshot(discosRef, (snap) => renderLista(snap));
+            });
+        } catch (e) {
+            onSnapshot(discosRef, (snap) => renderLista(snap));
+        }
+
+        // ADICIONAR NOVO DISCO
         document.getElementById('formAdmin').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btnSubmit');
+            const status = document.getElementById('status');
             btn.disabled = true;
+
             try {
                 await addDoc(discosRef, {
                     titulo: document.getElementById('nome').value,
@@ -87,17 +113,29 @@
                     genero: document.getElementById('genero').value,
                     preco: parseFloat(document.getElementById('preco').value),
                     imagem: document.getElementById('imagem').value,
-                    data: serverTimestamp() 
+                    data: serverTimestamp() // Importante para a página inicial
                 });
-                document.getElementById('status').innerText = "✅ Sucesso!";
+                status.innerText = "✅ Disco cadastrado!";
+                status.style.color = "green";
                 e.target.reset();
             } catch (err) {
-                document.getElementById('status').innerText = "❌ Erro ao salvar.";
-            } finally { btn.disabled = false; }
+                console.error(err);
+                status.innerText = "❌ Erro ao salvar.";
+                status.style.color = "red";
+            } finally {
+                btn.disabled = false;
+            }
         });
 
+        // FUNÇÃO PARA APAGAR
         window.apagarDisco = async (id) => {
-            if(confirm("Remover disco?")) await deleteDoc(doc(db, "discos", id));
+            if(confirm("Tens a certeza que queres remover este disco?")) {
+                try {
+                    await deleteDoc(doc(db, "discos", id));
+                } catch (err) {
+                    alert("Erro ao apagar.");
+                }
+            }
         };
     </script>
 </body>
