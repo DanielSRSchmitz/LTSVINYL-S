@@ -49,18 +49,20 @@
 
     <main class="catalogo">
         <div class="grid-produtos" id="grid-produtos">
+            
             <div class="card" data-genero="pop" data-preco="34">
-    <div class="disco-img billie-eilish" style="background-image: url('https://m.media-amazon.com/images/I/71dtYuD2+-L._SL1500_.jpg');"></div> 
-    <div class="card-info">
-        <span class="tag">Pop</span>
-        <h3>HIT ME HARD AND SOFT</h3>
-        <p class="artista">Billie Eilish</p>
-        <p class="preco">33.87€</p>
-        <button class="btn-comprar"><i class="fa-solid fa-cart-shopping"></i> Comprar</button>
-    </div>
-        </div>
-            <div class="card" data-genero="Pop" data-preco="25">
-                <div class="disco-img" style="background-image: url('https://upload.wikimedia.org/wikipedia/pt/e/e8/Happier_Than_Ever_%28%C3%A1lbum%29_-_Billie_Eilish.png?20210427155715');"></div>
+                <div class="disco-img" style="background-image: url('https://m.media-amazon.com/images/I/718N0vAn9tL._AC_SL1500_.jpg');"></div> 
+                <div class="card-info">
+                    <span class="tag">Pop</span>
+                    <h3>HIT ME HARD AND SOFT</h3>
+                    <p class="artista">Billie Eilish</p>
+                    <p class="preco">33.87€</p>
+                    <button class="btn-comprar"><i class="fa-solid fa-cart-shopping"></i> Comprar</button>
+                </div>
+            </div>
+
+            <div class="card" data-genero="pop" data-preco="25">
+                <div class="disco-img" style="background-image: url('https://upload.wikimedia.org/wikipedia/pt/e/e8/Happier_Than_Ever_%28%C3%A1lbum%29_-_Billie_Eilish.png');"></div>
                 <div class="card-info">
                     <span class="tag">Pop</span>
                     <h3>Happier Than Ever</h3>
@@ -69,16 +71,18 @@
                     <button class="btn-comprar"><i class="fa-solid fa-cart-shopping"></i> Comprar</button>
                 </div>
             </div>
-            <div class="card" data-genero="Pop" data-preco="25">
+
+            <div class="card" data-genero="pop" data-preco="25">
                 <div class="disco-img" style="background-image: url('https://m.media-amazon.com/images/I/61e23dfEOBL._SX425_.jpg');"></div>
                 <div class="card-info">
                     <span class="tag">Pop</span>
-                    <h3>WHEN WE All FALL ASLEEP, WHERE DO WE GO?</h3>
+                    <h3>WHEN WE ALL FALL ASLEEP...</h3>
                     <p class="artista">Billie Eilish</p>
                     <p class="preco">25.00€</p>
                     <button class="btn-comprar"><i class="fa-solid fa-cart-shopping"></i> Comprar</button>
                 </div>
             </div>
+
         </div>
     </main>
 </div>
@@ -88,19 +92,20 @@
     const generoFiltro = document.getElementById('genero');
     const precoRange = document.getElementById('precoRange');
     const precoValor = document.getElementById('precoValor');
-    const cards = document.querySelectorAll('.card');
+    const grid = document.getElementById('grid-produtos');
 
     function filtrar() {
         const texto = busca.value.toLowerCase();
         const generoSelecionado = generoFiltro.value.toLowerCase();
         const precoMaximo = parseInt(precoRange.value);
+        const cards = document.querySelectorAll('.card');
         
         precoValor.innerText = precoMaximo + "€";
 
         cards.forEach(card => {
             const nome = card.querySelector('h3').innerText.toLowerCase();
             const artista = card.querySelector('.artista').innerText.toLowerCase();
-            const generoCard = card.getAttribute('data-genero');
+            const generoCard = card.getAttribute('data-genero').toLowerCase();
             const precoCard = parseInt(card.getAttribute('data-preco'));
 
             const bateTexto = nome.includes(texto) || artista.includes(texto);
@@ -108,7 +113,7 @@
             const batePreco = precoCard <= precoMaximo;
 
             if (bateTexto && bateGenero && batePreco) {
-                card.style.display = "block";
+                card.style.display = "flex";
             } else {
                 card.style.display = "none";
             }
