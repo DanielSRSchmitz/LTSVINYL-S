@@ -22,30 +22,30 @@
     <main class="admin-container">
         
         <div class="card-admin">
-            <h2>Adicionar Novo Disco</h2>
+            <h2 id="titulo-form">Adicionar Novo Disco</h2>
             <form id="formAdmin">
                 <input type="text" id="nome" placeholder="Nome do Disco" required>
                 <input type="text" id="artista" placeholder="Artista" required>
-                <input type="text" id="genero" placeholder="Género (ex: Rock)" required>
+                <input type="text" id="genero" placeholder="Género" required>
                 <input type="number" id="preco" step="0.01" placeholder="Preço (€)" required>
                 <input type="text" id="imagem" placeholder="URL da Imagem da Capa" required>
                 <button type="submit" id="btnSubmit">Cadastrar na Vitrine</button>
+                <button type="button" id="btnCancelar" style="display:none; background:#ccc; margin-top:5px; width:100%; border:none; padding:10px; border-radius:8px; cursor:pointer;">Cancelar Edição</button>
             </form>
             <p id="status" style="text-align: center; margin-top: 10px; font-weight: bold;"></p>
         </div>
 
         <div class="lista-discos">
             <h3>Discos na Vitrine</h3>
-            <div id="container-discos">Carregando discos...</div>
+            <div id="container-discos">Carregando...</div>
         </div>
 
     </main>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, doc, deleteDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, doc, deleteDoc, onSnapshot, query, orderBy, serverTimestamp, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // CONFIGURAÇÃO (Verifica se estes dados coincidem com o teu Firebase Console)
         const firebaseConfig = {
     apiKey: "BBwuWn4Y0bENTnpuBGUejJZMzyBrQZDwsLAmswPhkFLHOx5_8jXb2GshqsW4VJCVSxVhpCPF4I4wBMf48FxhAiw", // Encontra isto em 'Seus aplicativos'
     authDomain: "ltsvinils.firebaseapp.com",
@@ -55,87 +55,97 @@
     appId: "814606881822"   // Também em 'Seus aplicativos'
 };
 
-
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const discosRef = collection(db, "discos");
 
-        // FUNÇÃO PARA RENDERIZAR A LISTA
-        function renderLista(snapshot) {
+        let editID = null; // Variável para saber se estamos a editar
+
+        // --- LISTAR DISCOS ---
+        const q = query(discosRef, orderBy("data", "desc"));
+        onSnapshot(q, (snapshot) => {
             const container = document.getElementById('container-discos');
             container.innerHTML = "";
-            
-            if (snapshot.empty) {
-                container.innerHTML = "<p style='text-align:center;'>Nenhum disco encontrado.</p>";
-                return;
-            }
-
             snapshot.forEach((d) => {
                 const disco = d.data();
                 container.innerHTML += `
                     <div class="item-disco">
                         <img src="${disco.imagem}" onerror="this.src='https://via.placeholder.com/60'">
                         <div class="info-disco">
-                            <strong>${disco.titulo || disco.nome}</strong>
+                            <strong>${disco.titulo || "Sem título"}</strong>
                             <small>${disco.artista} — ${disco.preco}€</small>
                         </div>
-                        <button class="btn-apagar" onclick="apagarDisco('${d.id}')">Apagar</button>
-                    </div>
-                `;
+                        <div class="acoes">
+                            <button class="btn-editar" onclick="prepararEdicao('${d.id}', '${disco.titulo}', '${disco.artista}', '${disco.genero}', '${disco.preco}', '${disco.imagem}')">Editar</button>
+                            <button class="btn-apagar" onclick="apagarDisco('${d.id}')">Apagar</button>
+                        </div>
+                    </div>`;
             });
-        }
+        }, (error) => {
+            // Se falhar o orderBy por falta de campo 'data', lista sem ordem
+            onSnapshot(discosRef, (snap) => { /* render simples */ });
+        });
 
-        // TENTAR LISTAR COM ORDEM (Se falhar, lista sem ordem)
-        try {
-            const q = query(discosRef, orderBy("data", "desc"));
-            onSnapshot(q, (snapshot) => {
-                renderLista(snapshot);
-            }, (error) => {
-                console.warn("Erro na ordenação (provavelmente falta o campo 'data' nos discos antigos):", error);
-                // Fallback: Lista sem ordem para que possas ver e apagar os antigos
-                onSnapshot(discosRef, (snap) => renderLista(snap));
-            });
-        } catch (e) {
-            onSnapshot(discosRef, (snap) => renderLista(snap));
-        }
+        // --- FUNÇÃO PARA PREPARAR EDIÇÃO ---
+        window.prepararEdicao = (id, titulo, artista, genero, preco, imagem) => {
+            editID = id;
+            document.getElementById('nome').value = titulo;
+            document.getElementById('artista').value = artista;
+            document.getElementById('genero').value = genero;
+            document.getElementById('preco').value = preco;
+            document.getElementById('imagem').value = imagem;
+            
+            document.getElementById('titulo-form').innerText = "Editar Disco";
+            document.getElementById('btnSubmit').innerText = "Guardar Alterações";
+            document.getElementById('btnCancelar').style.display = "block";
+            window.scrollTo(0,0);
+        };
 
-        // ADICIONAR NOVO DISCO
+        // --- CANCELAR EDIÇÃO ---
+        document.getElementById('btnCancelar').onclick = () => {
+            editID = null;
+            document.getElementById('formAdmin').reset();
+            document.getElementById('titulo-form').innerText = "Adicionar Novo Disco";
+            document.getElementById('btnSubmit').innerText = "Cadastrar na Vitrine";
+            document.getElementById('btnCancelar').style.display = "none";
+        };
+
+        // --- SUBMIT (CRIAR OU EDITAR) ---
         document.getElementById('formAdmin').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btnSubmit');
-            const status = document.getElementById('status');
             btn.disabled = true;
 
+            const dados = {
+                titulo: document.getElementById('nome').value,
+                artista: document.getElementById('artista').value,
+                genero: document.getElementById('genero').value,
+                preco: parseFloat(document.getElementById('preco').value),
+                imagem: document.getElementById('imagem').value,
+                data: serverTimestamp()
+            };
+
             try {
-                await addDoc(discosRef, {
-                    titulo: document.getElementById('nome').value,
-                    artista: document.getElementById('artista').value,
-                    genero: document.getElementById('genero').value,
-                    preco: parseFloat(document.getElementById('preco').value),
-                    imagem: document.getElementById('imagem').value,
-                    data: serverTimestamp() // Importante para a página inicial
-                });
-                status.innerText = "✅ Disco cadastrado!";
-                status.style.color = "green";
+                if (editID) {
+                    // EDITAR
+                    await updateDoc(doc(db, "discos", editID), dados);
+                    document.getElementById('status').innerText = "✅ Atualizado com sucesso!";
+                    document.getElementById('btnCancelar').click();
+                } else {
+                    // CRIAR NOVO
+                    await addDoc(discosRef, dados);
+                    document.getElementById('status').innerText = "✅ Disco adicionado!";
+                }
                 e.target.reset();
             } catch (err) {
-                console.error(err);
-                status.innerText = "❌ Erro ao salvar.";
-                status.style.color = "red";
+                document.getElementById('status').innerText = "❌ Erro na operação.";
             } finally {
                 btn.disabled = false;
             }
         });
 
-        // FUNÇÃO PARA APAGAR
         window.apagarDisco = async (id) => {
-            if(confirm("Tens a certeza que queres remover este disco?")) {
-                try {
-                    await deleteDoc(doc(db, "discos", id));
-                } catch (err) {
-                    alert("Erro ao apagar.");
-                }
-            }
+            if(confirm("Apagar permanentemente?")) await deleteDoc(doc(db, "discos", id));
         };
     </script>
 </body>

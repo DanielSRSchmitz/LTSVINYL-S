@@ -139,3 +139,26 @@ button[type="submit"]:hover { background: var(--navy); }
     font-size: 12px;
     font-weight: bold;
 }
+/* --- BOTÃO EDITAR --- */
+.btn-editar {
+    background: var(--sky);
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+    margin-right: 5px;
+    transition: 0.3s;
+}
+
+.btn-editar:hover {
+    background: var(--navy);
+}
+
+/* Ajuste para o grupo de botões na lista */
+.acoes {
+    display: flex;
+    gap: 5px;
+}
