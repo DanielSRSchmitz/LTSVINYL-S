@@ -14,7 +14,7 @@
         <div class="logo">LTS <span>VINYL-S</span></div>
         <ul>
             <li><a href="index.html">Início</a></li>
-            <li><a href="discos.html" class="active">Discos</a></li>
+            <li><a href="discos.php" class="active">Discos</a></li>
             <li><a href="sobre.html">Sobre</a></li>
             <li><a href="contacto.html">Contacto</a></li>
         </ul>
