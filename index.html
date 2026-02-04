@@ -32,7 +32,7 @@
     <section class="destaques">
         <h2>Últimas Novidades</h2>
         <div class="grid-produtos" id="destaques-container">
-            <p style="text-align: center; grid-column: 1/-1;">A carregar as novidades...</p>
+            <p style="text-align: center; grid-column: 1/-1;">A carregar novidades...</p>
         </div>
     </section>
 
@@ -40,7 +40,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // Configuração do teu projeto (usa os teus dados reais aqui)
+        // CONFIGURAÇÃO REVISADA (Verifica a tua API Key no Firebase console)
         const firebaseConfig = {
     apiKey: "BBwuWn4Y0bENTnpuBGUejJZMzyBrQZDwsLAmswPhkFLHOx5_8jXb2GshqsW4VJCVSxVhpCPF4I4wBMf48FxhAiw", // Encontra isto em 'Seus aplicativos'
     authDomain: "ltsvinils.firebaseapp.com",
@@ -57,38 +57,36 @@
             const container = document.getElementById('destaques-container');
             
             try {
-                // Consulta: Coleção 'discos', ordenado por data (mais recente primeiro), limite de 3
+                // IMPORTANTE: Se der erro, remove o orderBy("data", "desc") apenas para testar se os dados aparecem
                 const q = query(collection(db, "discos"), orderBy("data", "desc"), limit(3));
                 const querySnapshot = await getDocs(q);
                 
-                container.innerHTML = ""; // Limpa o texto de carregamento
+                container.innerHTML = "";
 
                 if (querySnapshot.empty) {
-                    container.innerHTML = "<p style='grid-column: 1/-1;'>Ainda não há discos em destaque.</p>";
+                    container.innerHTML = "<p style='grid-column: 1/-1;'>Ainda não há discos com data de cadastro.</p>";
                     return;
                 }
 
                 querySnapshot.forEach((doc) => {
                     const disco = doc.data();
-                    // Injeta o HTML usando exatamente as classes do teu CSS
                     container.innerHTML += `
                         <div class="card">
-                            <div class="disco-img" style="background-image: url('${disco.imagem}'); background-size: cover; background-position: center;"></div>
+                            <div class="disco-img" style="background-image: url('${disco.imagem}')"></div>
                             <h3>${disco.titulo}</h3>
                             <p>${disco.artista}</p>
                             <p class="preco">${disco.preco}€</p>
-                            <a href="discos.html" class="btn" style="padding: 10px 20px; font-size: 0.8rem; margin-top: 10px;">Ver Detalhes</a>
+                            <a href="discos.html" class="btn" style="padding: 8px 20px; font-size: 0.8rem;">Ver Catálogo</a>
                         </div>
                     `;
                 });
             } catch (error) {
-                console.error("Erro ao carregar destaques:", error);
-                container.innerHTML = "<p style='grid-column: 1/-1;'>Erro ao carregar novidades. Verifica a consola.</p>";
+                console.error("Erro detalhes:", error);
+                container.innerHTML = "<p style='grid-column: 1/-1;'>Erro ao carregar. Verifica se criaste o índice no link da consola (F12).</p>";
             }
         }
 
         carregarDestaques();
     </script>
-
 </body>
 </html>
