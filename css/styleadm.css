@@ -6,6 +6,7 @@
     --white: #ffffff;
     --bg-admin: #f0f2f5;
     --danger: #ff4757;
+    --success: #2ed573;
 }
 
 * {
@@ -22,7 +23,7 @@ body {
     min-height: 100vh;
 }
 
-/* --- HEADER (Largura Total) --- */
+/* --- HEADER --- */
 header {
     background-color: var(--dark-blue);
     padding: 1rem 5%;
@@ -63,36 +64,55 @@ nav ul li a:hover, nav ul li a.active { color: var(--sky) !important; }
 .admin-container {
     display: flex;
     flex-direction: column;
-    align-items: center; /* Centraliza horizontalmente os cards */
+    align-items: center;
     padding: 40px 20px;
     width: 100%;
+    gap: 30px;
 }
 
-/* --- CARDS (Formulário e Lista) --- */
-.card-admin, .lista-discos {
+/* --- CARDS --- */
+.card-admin {
     background: var(--white);
     padding: 30px;
     border-radius: 15px;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
     width: 100%;
-    max-width: 500px; /* Mantém uma largura elegante no centro */
-    margin-bottom: 30px;
+    max-width: 500px; /* Formulário mais estreito e elegante */
+}
+
+.lista-discos {
+    background: var(--white);
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    width: 100%;
+    max-width: 800px; /* Lista mais larga para caber tudo na horizontal */
 }
 
 .card-admin h2, .lista-discos h3 {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
     color: var(--dark-blue);
+    text-transform: uppercase;
+    font-size: 1.2rem;
+    letter-spacing: 1px;
 }
 
 /* --- FORMULÁRIO --- */
 input {
     width: 100%;
-    padding: 12px;
-    margin: 8px 0;
-    border: 1px solid #ddd;
+    padding: 12px 15px;
+    margin: 10px 0;
+    border: 1px solid #e1e8ef;
     border-radius: 8px;
     font-size: 14px;
+    transition: 0.3s;
+}
+
+input:focus {
+    outline: none;
+    border-color: var(--sky);
+    box-shadow: 0 0 0 3px rgba(98, 144, 200, 0.2);
 }
 
 button[type="submit"] {
@@ -104,61 +124,95 @@ button[type="submit"] {
     border-radius: 8px;
     cursor: pointer;
     font-weight: bold;
-    margin-top: 10px;
+    margin-top: 15px;
     transition: 0.3s;
 }
 
-button[type="submit"]:hover { background: var(--navy); }
+button[type="submit"]:hover {
+    background: var(--navy);
+    transform: translateY(-2px);
+}
 
-/* --- ITENS DA LISTA --- */
+/* --- ITENS DA LISTA (ESTILO LADO A LADO) --- */
 .item-disco {
     display: flex;
     align-items: center;
-    gap: 15px;
-    padding: 15px 0;
-    border-bottom: 1px solid #eee;
+    gap: 20px;
+    padding: 15px;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background 0.2s;
+}
+
+.item-disco:hover {
+    background-color: #fafbfc;
 }
 
 .item-disco img {
-    width: 60px;
-    height: 60px;
+    width: 65px;
+    height: 65px;
     object-fit: cover;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.info-disco {
+    flex-grow: 1; /* Faz com que o texto ocupe o espaço central e empurre os botões */
+}
+
+.info-disco strong {
+    display: block;
+    color: var(--dark-blue);
+    font-size: 1rem;
+    margin-bottom: 2px;
+}
+
+.info-disco span {
+    color: #7f8c8d;
+    font-size: 0.85rem;
+}
+
+/* --- BOTÕES DE AÇÃO --- */
+.acoes {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-editar, .btn-apagar {
+    padding: 10px 16px;
+    border: none;
     border-radius: 8px;
-}
-
-.info-disco { flex-grow: 1; }
-.info-disco strong { display: block; color: var(--dark-blue); }
-
-.btn-apagar {
-    background: var(--danger);
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 5px;
     cursor: pointer;
     font-size: 12px;
-    font-weight: bold;
-}
-/* --- BOTÃO EDITAR --- */
-.btn-editar {
-    background: var(--sky);
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 12px;
-    font-weight: bold;
-    margin-right: 5px;
+    font-weight: 700;
     transition: 0.3s;
+    text-transform: uppercase;
+}
+
+.btn-editar {
+    background: #eef2f7;
+    color: var(--navy);
 }
 
 .btn-editar:hover {
-    background: var(--navy);
+    background: var(--sky);
+    color: white;
 }
 
-/* Ajuste para o grupo de botões na lista */
-.acoes {
-    display: flex;
-    gap: 5px;
+.btn-apagar {
+    background: #fff0f0;
+    color: var(--danger);
+}
+
+.btn-apagar:hover {
+    background: var(--danger);
+    color: white;
+}
+
+/* Status de sucesso/erro */
+#status {
+    font-size: 13px;
+    text-align: center;
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 5px;
 }
