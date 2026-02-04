@@ -20,7 +20,6 @@
     </header>
 
     <main class="admin-container">
-        
         <div class="card-admin">
             <h2 id="titulo-form">Adicionar Novo Disco</h2>
             <form id="formAdmin">
@@ -37,9 +36,8 @@
 
         <div class="lista-discos">
             <h3>Discos na Vitrine</h3>
-            <div id="container-discos">Carregando...</div>
+            <div id="container-discos">A verificar ligação ao banco de dados...</div>
         </div>
-
     </main>
 
     <script type="module">
@@ -59,13 +57,18 @@
         const db = getFirestore(app);
         const discosRef = collection(db, "discos");
 
-        let editID = null; // Variável para saber se estamos a editar
+        let editID = null;
 
-        // --- LISTAR DISCOS ---
-        const q = query(discosRef, orderBy("data", "desc"));
-        onSnapshot(q, (snapshot) => {
+        // --- FUNÇÃO PARA RENDERIZAR A LISTA ---
+        function renderLista(snapshot) {
             const container = document.getElementById('container-discos');
             container.innerHTML = "";
+            
+            if (snapshot.empty) {
+                container.innerHTML = "<p style='text-align:center; padding: 20px;'>Nenhum disco encontrado na base de dados.</p>";
+                return;
+            }
+
             snapshot.forEach((d) => {
                 const disco = d.data();
                 container.innerHTML += `
@@ -75,42 +78,24 @@
                             <strong>${disco.titulo || "Sem título"}</strong>
                             <small>${disco.artista} — ${disco.preco}€</small>
                         </div>
-                        <div class="acoes">
+                        <div class="acoes" style="display: flex; gap: 5px;">
                             <button class="btn-editar" onclick="prepararEdicao('${d.id}', '${disco.titulo}', '${disco.artista}', '${disco.genero}', '${disco.preco}', '${disco.imagem}')">Editar</button>
                             <button class="btn-apagar" onclick="apagarDisco('${d.id}')">Apagar</button>
                         </div>
                     </div>`;
             });
+        }
+
+        // --- LISTAR DISCOS (Tenta ordenado, se falhar mostra tudo) ---
+        const q = query(discosRef, orderBy("data", "desc"));
+        onSnapshot(q, (snapshot) => {
+            renderLista(snapshot);
         }, (error) => {
-            // Se falhar o orderBy por falta de campo 'data', lista sem ordem
-            onSnapshot(discosRef, (snap) => { /* render simples */ });
+            console.warn("Ordenação falhou, a mostrar lista simples:", error);
+            onSnapshot(discosRef, (snap) => renderLista(snap));
         });
 
-        // --- FUNÇÃO PARA PREPARAR EDIÇÃO ---
-        window.prepararEdicao = (id, titulo, artista, genero, preco, imagem) => {
-            editID = id;
-            document.getElementById('nome').value = titulo;
-            document.getElementById('artista').value = artista;
-            document.getElementById('genero').value = genero;
-            document.getElementById('preco').value = preco;
-            document.getElementById('imagem').value = imagem;
-            
-            document.getElementById('titulo-form').innerText = "Editar Disco";
-            document.getElementById('btnSubmit').innerText = "Guardar Alterações";
-            document.getElementById('btnCancelar').style.display = "block";
-            window.scrollTo(0,0);
-        };
-
-        // --- CANCELAR EDIÇÃO ---
-        document.getElementById('btnCancelar').onclick = () => {
-            editID = null;
-            document.getElementById('formAdmin').reset();
-            document.getElementById('titulo-form').innerText = "Adicionar Novo Disco";
-            document.getElementById('btnSubmit').innerText = "Cadastrar na Vitrine";
-            document.getElementById('btnCancelar').style.display = "none";
-        };
-
-        // --- SUBMIT (CRIAR OU EDITAR) ---
+        // --- ADICIONAR / ATUALIZAR ---
         document.getElementById('formAdmin').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btnSubmit');
@@ -127,26 +112,51 @@
 
             try {
                 if (editID) {
-                    // EDITAR
                     await updateDoc(doc(db, "discos", editID), dados);
-                    document.getElementById('status').innerText = "✅ Atualizado com sucesso!";
-                    document.getElementById('btnCancelar').click();
+                    alert("Disco atualizado!");
+                    cancelarEdicao();
                 } else {
-                    // CRIAR NOVO
                     await addDoc(discosRef, dados);
-                    document.getElementById('status').innerText = "✅ Disco adicionado!";
+                    alert("Disco adicionado com sucesso!");
                 }
                 e.target.reset();
             } catch (err) {
-                document.getElementById('status').innerText = "❌ Erro na operação.";
+                alert("Erro ao guardar dados: " + err.message);
+                console.error(err);
             } finally {
                 btn.disabled = false;
             }
         });
 
-        window.apagarDisco = async (id) => {
-            if(confirm("Apagar permanentemente?")) await deleteDoc(doc(db, "discos", id));
+        // --- FUNÇÕES GLOBAIS ---
+        window.prepararEdicao = (id, titulo, artista, genero, preco, imagem) => {
+            editID = id;
+            document.getElementById('nome').value = titulo;
+            document.getElementById('artista').value = artista;
+            document.getElementById('genero').value = genero;
+            document.getElementById('preco').value = preco;
+            document.getElementById('imagem').value = imagem;
+            document.getElementById('titulo-form').innerText = "Editar Disco";
+            document.getElementById('btnSubmit').innerText = "Guardar Alterações";
+            document.getElementById('btnCancelar').style.display = "block";
+            window.scrollTo(0,0);
         };
+
+        window.cancelarEdicao = () => {
+            editID = null;
+            document.getElementById('formAdmin').reset();
+            document.getElementById('titulo-form').innerText = "Adicionar Novo Disco";
+            document.getElementById('btnSubmit').innerText = "Cadastrar na Vitrine";
+            document.getElementById('btnCancelar').style.display = "none";
+        };
+
+        window.apagarDisco = async (id) => {
+            if(confirm("Deseja apagar este disco permanentemente?")) {
+                await deleteDoc(doc(db, "discos", id));
+            }
+        };
+        
+        document.getElementById('btnCancelar').onclick = window.cancelarEdicao;
     </script>
 </body>
 </html>
